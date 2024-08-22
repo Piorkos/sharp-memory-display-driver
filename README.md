@@ -25,8 +25,8 @@ display->DrawLineOfText(x, y, "HELLO", kFont_12_16);
 - string: The text string you want to display on the screen.
 - font: table of font which should be use
 - join_with_existing_text: If set to TRUE, the new text will be added to any existing content on the same lines. If set to FALSE, the existing content within the text area will be erased and replaced with the new text. This does not affect content outside the area where the new text is placed.
-### Toggling VCOM Manually
-The VCOM signal must be toggled at least once per second to avoid display degradation. The driver automatically toggles VCOM during any draw operation. If no drawing occurs within a second, you must call the ToggleVCOM() method manually to toggle the VCOM.
+### VCOM Management
+The VCOM signal must be toggled at least **once per second** to avoid display degradation. The driver automatically toggles VCOM during any draw operation. If no drawing occurs within a second, you must call the ToggleVCOM() method manually to toggle the VCOM.
 ```cpp
 display->ToggleVCOM();
 ```
