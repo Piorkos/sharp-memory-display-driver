@@ -6,19 +6,9 @@
 const uint8_t kFont_12_16[] = {
     
     // ---FONT WIDTH x HEIGTH---
-    // Width - number of bites used to represent width of char it is NOT the same as width of char in pixels
-    // Height - number of bites used to represent width of char = number of pixels
-    0x08,       0x0C,
-    
-    // ---SPACE---
-    // Additional pixels between following letters. 
-    // This is for situation where width of the letter is equal (or almost equal) to byte.
-    // Example 1: if width of the letter is 12, then it will use 2 bytes for needed pixels. 
-    // However 2 bytes gives 16 bites and the letter use only 12 of them, so 4 pixels will be used as space before the letter.
-    // Example 2: If the width of the letter is 8, then it will use 1 byte for needed pixels and will use all bites from that byte.
-    // Hence there will be no space. In this case below variable will be used to add space. 
-    // Value of it will define how many pixels should be used as space between letters.
-    0x00,
+    // Width - number of BYTES used to represent width of char it is NOT the same as width of char in pixels
+    // Height - number of BITES used to represent height of char = number of pixels
+    0x02,       0x10,
 
     // ---FIRST CHAR---
     // Table may not contain all ASCII signs. This variable informs what is the first ASCII sign available in this table.

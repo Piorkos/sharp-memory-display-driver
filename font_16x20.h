@@ -7,9 +7,9 @@
 const uint8_t kFont_16_20[] = {
     
     // ---FONT WIDTH x HEIGTH---
-    // Width - number of bites used to represent width of char it is NOT the same as width of char in pixels
-    // Height - number of bites used to represent width of char = number of pixels
-    0x08,       0x0C,
+    // Width - number of BYTES used to represent width of char it is NOT the same as width of char in pixels
+    // Height - number of BITES used to represent height of char = number of pixels
+    0x03,       0x14,
 
     // ---FIRST CHAR---
     // Table may not contain all ASCII signs. This variable informs what is the first ASCII sign available in this table.
