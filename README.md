@@ -6,7 +6,7 @@ This repository contains a custom driver for interfacing Sharp Memory LCD displa
 
 ### Creating the Display Object
 To start using the display, create an instance of the SharpMipDisplay class:
-```
+```cpp
 #include "sharp_mip_display.h"
 
 SharpMipDisplay* display = new SharpMipDisplay(DISPLAY_WIDTH, DISPLAY_HEIGHT, spi1, SPI_CS_PIN);
@@ -14,7 +14,7 @@ SharpMipDisplay* display = new SharpMipDisplay(DISPLAY_WIDTH, DISPLAY_HEIGHT, sp
 
 ### Writing Text to the Display
 You can display text using the DrawLineOfText() method of the SharpMipDisplay class. The method parameters allow you to specify the position and behavior of the text:
-```
+```cpp
 #include "font_12x16.h"
 
 display->DrawLineOfText(x, y, "HELLO", kFont_12_16);
@@ -27,13 +27,13 @@ display->DrawLineOfText(x, y, "HELLO", kFont_12_16);
 - join_with_existing_text: If set to TRUE, the new text will be added to any existing content on the same lines. If set to FALSE, the existing content within the text area will be erased and replaced with the new text. This does not affect content outside the area where the new text is placed.
 ### Toggling VCOM Manually
 The VCOM signal must be toggled at least once per second to avoid display degradation. The driver automatically toggles VCOM during any draw operation. If no drawing occurs within a second, you must call the ToggleVCOM() method manually to toggle the VCOM.
-```
+```cpp
 display->ToggleVCOM();
 ```
 
 ## Example Code
 Here’s a simple example of how to create the display object and write text:
-```
+```cpp
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
