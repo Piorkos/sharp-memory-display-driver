@@ -21,16 +21,7 @@ SharpMipDisplay::SharpMipDisplay(uint16_t width, uint16_t height, spi_inst_t* sp
 //     // delete[] screen_buffer_;
 // }
 
-/**
- * @brief Updates screen buffer (array) with given text. The text is put in the screen buffer at given position.
- * 
- * @param x column, position at which the text starts, in BYTES (8 pixels). It is the number of columns (screen_width_in_pixels/8), NOT pixels.
- * @param y row, position at which the text starts, in PIXELS.
- * @param new_string string which needs to be put in screen buffer on given position.
- * @param font Table with font which should be used. 
- * @param join_with_existing_pixels If FALSE it will clear previous pixels and draw text on empty space. 
- *          If TRUE it will keep existing pixels and join new text with them. Default FALSE.
- */
+
 void SharpMipDisplay::DrawLineOfText(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[], bool join_with_existing_pixels)
 {
     printf("--SharpMipDisplay::DrawLineOfText : new_string = %s \n", new_string.c_str());
@@ -45,12 +36,39 @@ void SharpMipDisplay::DrawLineOfText(uint16_t x, uint16_t y, const std::string& 
     }
 }
 
-/**
- * @brief Sends new pixel values to the screen. It updates all lines between line_start and line_end.
- * 
- * @param line_start number of the first row which should be updated.
- * @param line_end number of the last row which should be updated.
- */
+void SharpMipDisplay::DrawHorizontalLine(uint16_t x)
+{
+    for(std::size_t i = 0; i < kScreenWidthInWords_; ++i)
+    {
+        screen_buffer_[x*kScreenWidthInWords_ + i] = 0b00000000;
+    }
+}
+
+void SharpMipDisplay::DrawVerticalLine(uint16_t y)
+{
+    
+    for(std::size_t i = 0; i < kScreenHeight_; ++i)
+    {
+        SetPixel(y, i);
+    }
+}
+
+void SharpMipDisplay::SetPixel(uint16_t x, uint16_t y)
+{
+    uint16_t pixel_in_byte = x % 8;
+    uint16_t column_in_bytes = (x - pixel_in_byte) / 8;
+    uint8_t mask = 0b000000001 << pixel_in_byte;
+    screen_buffer_[y*kScreenWidthInWords_ + column_in_bytes] &= ~mask;
+}
+
+void SharpMipDisplay::ResetPixel(uint16_t x, uint16_t y)
+{
+    uint16_t pixel_in_byte = x % 8;
+    uint16_t column_in_bytes = (x - pixel_in_byte) / 8;
+    uint8_t mask = 0b000000001 << pixel_in_byte;
+    screen_buffer_[y*kScreenWidthInWords_ + column_in_bytes] |= mask;
+}
+
 void SharpMipDisplay::RefreshScreen(uint8_t line_start, uint8_t line_end)
 {
     printf("-- SharpMipDisplay::RefreshScreen \n");
@@ -93,10 +111,6 @@ void SharpMipDisplay::RefreshScreen(uint8_t line_start, uint8_t line_end)
     sleep_ms(10);
 }
 
-/**
- * @brief Clears the screen.
- * 
- */
 void SharpMipDisplay::ClearScreen()
 {
     printf("-- ClearScreen \n");
@@ -124,10 +138,6 @@ void SharpMipDisplay::ClearScreen()
     gpio_put(kDisplaySpiCsPin_, 0);
 }
 
-/**
- * @brief Toggles the state of VCOM. Sharp MIP requires to toggle VCOM at least once per second. 
- * 
- */
 void SharpMipDisplay::ToggleVCOM()
 {
     printf("-- SharpMipDisplay::ToggleVCOM \n");
@@ -165,8 +175,6 @@ uint8_t SharpMipDisplay::SwapBigToLittleEndian(uint8_t big_endian)
 
 void SharpMipDisplay::DrawLineOfTextReplace(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[])
 {
-    printf("-- SharpMipDisplay::DrawLineOfTextReplace  \n");
-    
     uint8_t char_width_in_bytes = font[0];
     uint8_t char_height_in_pixels = font[1];
     uint8_t first_char_in_fonts = font[2];
@@ -194,7 +202,6 @@ void SharpMipDisplay::DrawLineOfTextReplace(uint16_t x, uint16_t y, const std::s
 
 void SharpMipDisplay::DrawLineOfTextAdd(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[])
 {
-    printf("-- SharpMipDisplay::DrawLineOfTextAdd  \n");
     uint8_t char_width_in_bytes = font[0];
     uint8_t char_height_in_pixels = font[1];
     uint8_t first_char_in_fonts = font[2];
@@ -220,13 +227,6 @@ void SharpMipDisplay::DrawLineOfTextAdd(uint16_t x, uint16_t y, const std::strin
     }
 }
 
-/**
- * @brief Helper function to print array of pixels in the terminal. Used only during debugging.
- * 
- * @param array_to_print 
- * @param width in BYTES
- * @param heigth in BITS (pixels)
- */
 void SharpMipDisplay::PrintBinaryArray(const uint8_t* array_to_print, size_t width, size_t heigth)
 {
     printf("--SharpMipDisplay::PrintBinaryArray\n");
