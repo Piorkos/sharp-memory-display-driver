@@ -1,7 +1,7 @@
 #include "sharp_mip_display.h"
 
 SharpMipDisplay::SharpMipDisplay(uint16_t width, uint16_t height, spi_inst_t* spi, uint display_cs_pin)
-: Display(width, height), kSPI_{spi}, kDisplaySpiCsPin_{display_cs_pin}
+: Display(width, height), kDisplaySpiCsPin_{display_cs_pin}, kSPI_{spi}
 {
     for(std::size_t i = 0; i < (kScreenHeight_ * kScreenWidthInWords_); ++i)
     {
