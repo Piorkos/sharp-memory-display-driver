@@ -1,6 +1,7 @@
 # Sharp Memory display driver for Raspberry Pi Pico SDK
 
 This repository contains a custom driver for interfacing Sharp Memory LCD displays with the Raspberry's RP2040 using the Pico SDK. The driver enables text display on the screen and includes support for two fonts, though not all ASCII characters are currently supported. The driver also manages the toggling of the VCOM signal, which is required to prevent screen degradation.
+The Sharp Memory Display shines with its ultra-low power consumption—up. My driver is optimized to maintain that efficiency while delivering solid performance, perfect for energy-sensitive applications. However, due to the focus on performance and low power usage, the driver is designed with certain limitations and does not support drawing more complex graphical elements.
 
 ## Usage
 
