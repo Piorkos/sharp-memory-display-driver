@@ -9,7 +9,6 @@
 
 #include "display.h"
 #include "font_16x20.h"
-// #include "../../core/config.h"
 
 class SharpMipDisplay : public Display
 {
