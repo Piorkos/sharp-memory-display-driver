@@ -3,6 +3,13 @@
 SharpMipDisplay::SharpMipDisplay(uint16_t width, uint16_t height, spi_inst_t* spi, uint display_cs_pin)
 : Display(width, height), kDisplaySpiCsPin_{display_cs_pin}, kSPI_{spi}
 {
+    // Set Chip Select pin used by SPI 
+    gpio_init(kDisplaySpiCsPin_);
+    gpio_set_dir(kDisplaySpiCsPin_, GPIO_OUT);
+    gpio_put(kDisplaySpiCsPin_, 0);  // this display is low on inactive
+    sleep_ms(10);
+
+    // Initialize buffer with white pixels
     for(std::size_t i = 0; i < (kScreenHeight_ * kScreenWidthInWords_); ++i)
     {
         screen_buffer_[i] = 0xFF;
@@ -22,17 +29,21 @@ SharpMipDisplay::SharpMipDisplay(uint16_t width, uint16_t height, spi_inst_t* sp
 // }
 
 
-void SharpMipDisplay::DrawLineOfText(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[], bool join_with_existing_pixels)
+void SharpMipDisplay::DrawLineOfText(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[], Mode mode)
 {
-    printf("--SharpMipDisplay::DrawLineOfText : new_string = %s \n", new_string.c_str());
+    // printf("--SharpMipDisplay::DrawLineOfText : new_string = %s \n", new_string.c_str());
 
-    if(join_with_existing_pixels)
+    if(mode == Mode::kReplace)
     {
-        DrawLineOfTextAdd(x, y, new_string, font);
+        DrawLineOfTextReplace(x, y, new_string, font);
+    }
+    else if(mode == Mode::kMix)
+    {
+        DrawLineOfTextMix(x, y, new_string, font);
     }
     else
     {
-        DrawLineOfTextReplace(x, y, new_string, font);
+        DrawLineOfTextAdd(x, y, new_string, font);
     }
 }
 
@@ -71,7 +82,7 @@ void SharpMipDisplay::ResetPixel(uint16_t x, uint16_t y)
 
 void SharpMipDisplay::RefreshScreen(uint8_t line_start, uint8_t line_end)
 {
-    printf("-- SharpMipDisplay::RefreshScreen \n");
+    // printf("-- SharpMipDisplay::RefreshScreen \n");
     
     gpio_put(kDisplaySpiCsPin_, 1);
 
@@ -113,7 +124,7 @@ void SharpMipDisplay::RefreshScreen(uint8_t line_start, uint8_t line_end)
 
 void SharpMipDisplay::ClearScreen()
 {
-    printf("-- ClearScreen \n");
+    // printf("-- ClearScreen \n");
 
     for(int i = 0; i < (kScreenWidthInWords_ * kScreenHeight_); ++i) 
     {
@@ -140,7 +151,7 @@ void SharpMipDisplay::ClearScreen()
 
 void SharpMipDisplay::ToggleVCOM()
 {
-    printf("-- SharpMipDisplay::ToggleVCOM \n");
+    // printf("-- SharpMipDisplay::ToggleVCOM \n");
     gpio_put(kDisplaySpiCsPin_, 1);
     uint8_t buf[22];
     if(vcom_bool_)
@@ -174,6 +185,46 @@ uint8_t SharpMipDisplay::SwapBigToLittleEndian(uint8_t big_endian)
 }
 
 void SharpMipDisplay::DrawLineOfTextReplace(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[])
+{
+    uint8_t char_width_in_bytes = font[0];
+    uint8_t char_height_in_pixels = font[1];
+    uint8_t first_char_in_fonts = font[2];
+    uint16_t char_size_in_bytes = char_width_in_bytes * char_height_in_pixels;
+    
+    // Draw given text
+    uint16_t char_counter{0};
+    for(const auto& character : new_string)     // iterate through every char in string
+    {
+        int char_position{(character - first_char_in_fonts)*char_size_in_bytes + 3};
+
+        for(std::size_t i = 0; i < char_width_in_bytes; ++i)
+        {
+            for(std::size_t j = 0; j < char_height_in_pixels; ++j)  //iterate vertically through every line in a char
+            {
+                uint16_t row = (y + j)*kScreenWidthInWords_;
+                uint16_t col = x + char_counter*char_width_in_bytes + i;
+                screen_buffer_[row + col] = font[char_position + i + j*char_width_in_bytes];
+            }
+        }
+
+        ++char_counter;
+    }
+
+    // Erase ramaining cols, which are not filled with new text
+    uint16_t remaining_cols{kScreenWidthInWords_ - char_counter*char_width_in_bytes};
+    uint8_t blank_pixel{0b11111111};
+    for(std::size_t i = 0; i < remaining_cols; ++i)
+    {
+        for(std::size_t j = 0; j < char_height_in_pixels; ++j)  //iterate vertically through every line in a char
+        {
+            uint16_t row = (y + j)*kScreenWidthInWords_;
+            uint16_t col = x + (char_counter*char_width_in_bytes) + i;
+            screen_buffer_[row + col] = blank_pixel;
+        }
+    }
+}
+
+void SharpMipDisplay::DrawLineOfTextMix(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[])
 {
     uint8_t char_width_in_bytes = font[0];
     uint8_t char_height_in_pixels = font[1];
@@ -229,7 +280,7 @@ void SharpMipDisplay::DrawLineOfTextAdd(uint16_t x, uint16_t y, const std::strin
 
 void SharpMipDisplay::PrintBinaryArray(const uint8_t* array_to_print, size_t width, size_t heigth)
 {
-    printf("--SharpMipDisplay::PrintBinaryArray\n");
+    // printf("--SharpMipDisplay::PrintBinaryArray\n");
     for (size_t i = 0; i < heigth; i++)     // rows
     {
         for (size_t j = 0; j < width; j++)  // cols

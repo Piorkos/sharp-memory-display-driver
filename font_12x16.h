@@ -1,5 +1,5 @@
-#ifndef FONTS_H
-#define FONTS_H
+#ifndef FONT_12x16_H
+#define FONT_12x16_H
 
 #include <stdio.h>
 
@@ -753,4 +753,4 @@ const uint8_t kFont_12_16[] = {
     0b11110000, 0b00000000
 };
 
-#endif  //FONTS_H
+#endif  //FONT_12x16_H

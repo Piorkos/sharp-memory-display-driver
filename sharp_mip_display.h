@@ -9,10 +9,12 @@
 
 #include "display.h"
 #include "font_16x20.h"
+// #include "../../core/config.h"
 
 class SharpMipDisplay : public Display
 {
 public:
+
     SharpMipDisplay(uint16_t width, uint16_t height, spi_inst_t *spi, uint display_cs_pin);
 
     /**
@@ -22,10 +24,12 @@ public:
      * @param y row, in PIXELS. Position at which the text starts.
      * @param new_string string which needs to be put in screen buffer on given position.
      * @param font Table with font which should be used. 
-     * @param join_with_existing_pixels If FALSE it will clear previous pixels and draw text on empty space. 
-     *          If TRUE it will keep existing pixels and join new text with them. Default FALSE.
+     * @param mode The rendering mode to use when drawing the text. The mode can be one of the following:
+     *  - Mode::kReplace: Fully erases the selected rows before drawing the new text, even if the new text does not cover all columns in those rows.
+     *  - Mode::kMix: Erases only the columns in the selected rows that are needed to draw the new text, preserving the rest of the existing content in those rows.
+     *  - Mode::kAdd: Does not erase any part of the existing content; instead, the new text is merged with the existing text on the display.
      */
-    void DrawLineOfText(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[], bool join_with_existing_pixels = false) override;
+    void DrawLineOfText(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[], Mode mode = Mode::kReplace) override;
 
     /**
      * @brief Draws a horizontal line. This method operates on full bytes, not on pixels also requires to redraw only 1 line of the screen, hence has very good performance
@@ -78,8 +82,10 @@ public:
     void ToggleVCOM();
 
 private:
+
     uint8_t SwapBigToLittleEndian(uint8_t big_endian);
     void DrawLineOfTextReplace(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[]);
+    void DrawLineOfTextMix(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[]);
     void DrawLineOfTextAdd(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[]);
 
     /**

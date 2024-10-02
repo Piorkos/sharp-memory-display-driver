@@ -8,9 +8,15 @@
 class Display
 {
 public:
+    enum class Mode{
+        kReplace,
+        kMix,
+        kAdd
+    };
+
     Display(uint16_t width, uint16_t height);
     virtual ~Display();
-    virtual void DrawLineOfText(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[], bool join_with_existing_pixels = false) = 0;
+    virtual void DrawLineOfText(uint16_t x, uint16_t y, const std::string& new_string, const uint8_t font[], Mode mode = Mode::kReplace) = 0;
     virtual void DrawHorizontalLine(uint16_t x) = 0;
     virtual void DrawVerticalLine(uint16_t y) = 0;
     virtual void SetPixel(uint16_t x, uint16_t y) = 0;
