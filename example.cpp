@@ -8,6 +8,7 @@
 #include "sharp_mip_display.h"
 #include "font_12x16.h"
 #include "font_16x20.h"
+#include "font_12x20.h"
 
 // SPI pins
 #define SPI_SCK_PIN     26U         // SCLK / SCK
@@ -48,8 +49,12 @@ int main() {
         if(counter < 120)
         {
             display->ClearScreen();
-            display->DrawLineOfText(0,counter, "CZE", kFont_16_20);
-            display->RefreshScreen(20,140);
+            display->DrawLineOfText(0,0, "AdefgB", kFont_12_20);
+            display->DrawLineOfText(0,22, "uxyV", kFont_12_20);
+            display->DrawLineOfText(0,44, "1z", kFont_12_20);
+            display->DrawLineOfText(0,62, "abc", kFont_12_20);
+            display->DrawLineOfText(0,92, "@23", kFont_12_20);
+            display->RefreshScreen(0,140);
             ++counter;
         }
         else
