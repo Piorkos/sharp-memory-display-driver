@@ -38,7 +38,7 @@ int main() {
     SharpMipDisplay* display = new SharpMipDisplay(DISPLAY_WIDTH, DISPLAY_HEIGHT, spi1, SPI_CS_PIN);
     sleep_ms(1000);
     display->ClearScreen();
-    display->DrawLineOfText(0, 0, "HELLO", kFont_12_16);
+    display->DrawLineOfText(0, 0, "HELLO", kFont_12_20);
     display->RefreshScreen(0,16);
 
     int counter{20};
@@ -49,11 +49,25 @@ int main() {
         if(counter < 120)
         {
             display->ClearScreen();
-            display->DrawLineOfText(0,0, "AdefgB", kFont_12_20);
-            display->DrawLineOfText(0,22, "uxyV", kFont_12_20);
-            display->DrawLineOfText(0,44, "1z", kFont_12_20);
-            display->DrawLineOfText(0,62, "abc", kFont_12_20);
-            display->DrawLineOfText(0,92, "@23", kFont_12_20);
+            display->DrawLineOfText(0,0, "1 1!1\"1#1", kFont_12_20);
+            display->DrawLineOfText(0,22, "$%&'()*+,", kFont_12_20);
+            display->DrawLineOfText(0,44, "-./123456", kFont_12_20);
+            display->DrawLineOfText(0,66, "789:;<=>?", kFont_12_20);
+            display->DrawLineOfText(0,88, "@ABCDEFG", kFont_12_20);
+            display->DrawLineOfText(0,110, "HIJKLMNO", kFont_12_20);
+            display->DrawLineOfText(0,132, "PQRSTUVWX", kFont_12_20);
+            display->DrawLineOfText(0,154, "YZ[\\]^_`", kFont_12_20);
+            display->RefreshScreen(0,140);
+            ++counter;
+        }
+        else if(counter < 240)
+        {
+            display->ClearScreen();
+            display->DrawLineOfText(0,0, "YZ[\\]^_`", kFont_12_20);
+            display->DrawLineOfText(0,22, "abcdefghi", kFont_12_20);
+            display->DrawLineOfText(0,44, "jklmnopqr", kFont_12_20);
+            display->DrawLineOfText(0,66, "stuvwxyz{", kFont_12_20);
+            display->DrawLineOfText(0,88, "|}~1 1", kFont_12_20);
             display->RefreshScreen(0,140);
             ++counter;
         }
