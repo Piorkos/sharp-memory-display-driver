@@ -6,9 +6,10 @@
 
 #include "display.h"
 #include "sharp_mip_display.h"
-#include "font_12x16.h"
-#include "font_16x20.h"
-#include "font_12x20.h"
+#include "fonts/font_8x10.h"
+#include "fonts/font_16x20.h"
+#include "fonts/font_24x30.h"
+#include "fonts/font_32x40.h"
 
 // SPI pins
 #define SPI_SCK_PIN     26U         // SCLK / SCK
@@ -16,7 +17,7 @@
 #define SPI_CS_PIN      28U         // SS / CS
 // Display resolution in pixels
 #define DISPLAY_WIDTH   144U
-#define DISPLAY_HEIGHT   168U
+#define DISPLAY_HEIGHT  168U
 
 
 int main() {
@@ -38,44 +39,70 @@ int main() {
     SharpMipDisplay* display = new SharpMipDisplay(DISPLAY_WIDTH, DISPLAY_HEIGHT, spi1, SPI_CS_PIN);
     sleep_ms(1000);
     display->ClearScreen();
-    display->DrawLineOfText(0, 0, "HELLO", kFont_12_20);
-    display->RefreshScreen(0,16);
+    display->DrawLineOfText(0, 0, "HELLO", kFont_24_30);
+    display->RefreshScreen(0,30);
 
-    int counter{20};
+    // Array with printable ASCII characters
+    uint8_t amount_of_printable_chars{95};
+    uint8_t printable_chars[amount_of_printable_chars] = {' ', '!', '"', '#', '$', '%', '&', '\'', '(', ')', 
+                                    '*', '+', ',', '-', '.', '/', '0', '1', '2', '3',
+                                    '4', '5', '6', '7', '8', '9', ':', ';', '<', '=',
+                                    '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
+                                    'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+                                    'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[',
+                                    '\\', ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e',
+                                    'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+                                    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
+                                    'z', '{', '|', '}', '~'};
+    int counter{0};
+    int font_iterator{0};
+    // arrray of pointers to arrays
+    const uint8_t* font_array[] = {kFont_32_40, kFont_16_20, kFont_24_30, kFont_8_10};
+    auto selected_font = font_array[0];
+    int chars_per_line{DISPLAY_WIDTH / (selected_font[0] * 8)};
+    int line_height{selected_font[1] + 2};    // +2 to add some space between lines
+    int max_lines{DISPLAY_HEIGHT / line_height};
+    int max_characters{chars_per_line * max_lines};
+    std::string s{""};
+
     while (true)
     {
-        sleep_ms(1000);
-        
-        if(counter < 120)
+        sleep_ms(2000);
+
+        // Print as much characters as the screen can fit
+        display->ClearScreen();
+        for(int i = 0; i < max_lines; ++i)  // iterate through all lines
         {
-            display->ClearScreen();
-            display->DrawLineOfText(0,0, "1 1!1\"1#1", kFont_12_20);
-            display->DrawLineOfText(0,22, "$%&'()*+,", kFont_12_20);
-            display->DrawLineOfText(0,44, "-./123456", kFont_12_20);
-            display->DrawLineOfText(0,66, "789:;<=>?", kFont_12_20);
-            display->DrawLineOfText(0,88, "@ABCDEFG", kFont_12_20);
-            display->DrawLineOfText(0,110, "HIJKLMNO", kFont_12_20);
-            display->DrawLineOfText(0,132, "PQRSTUVWX", kFont_12_20);
-            display->DrawLineOfText(0,154, "YZ[\\]^_`", kFont_12_20);
-            display->RefreshScreen(0,140);
-            ++counter;
+            for(int j = 0; j < chars_per_line; ++j) // iterate through all chars in a line
+            {
+                // Add next character from printable_chars array to the string
+                if(i*chars_per_line + j + counter < amount_of_printable_chars)
+                {
+                    s += printable_chars[i*chars_per_line + j + counter];
+                }
+            }    
+            display->DrawLineOfText(0, i*line_height, s, selected_font);
+
+            // Reset the s string
+            s = "";
         }
-        else if(counter < 240)
+        display->RefreshScreen(0,DISPLAY_HEIGHT);
+
+
+        // If all characters already displayed, switch to next font
+        if(counter > (amount_of_printable_chars - max_characters))
         {
-            display->ClearScreen();
-            display->DrawLineOfText(0,0, "YZ[\\]^_`", kFont_12_20);
-            display->DrawLineOfText(0,22, "abcdefghi", kFont_12_20);
-            display->DrawLineOfText(0,44, "jklmnopqr", kFont_12_20);
-            display->DrawLineOfText(0,66, "stuvwxyz{", kFont_12_20);
-            display->DrawLineOfText(0,88, "|}~1 1", kFont_12_20);
-            display->RefreshScreen(0,140);
-            ++counter;
+            counter = 0;
+            font_iterator++;
+            selected_font = font_array[font_iterator % 4];
+            chars_per_line = DISPLAY_WIDTH / (selected_font[0] * 8);
+            line_height = selected_font[1] + 2;
+            max_lines = DISPLAY_HEIGHT / line_height;
+            max_characters = chars_per_line * max_lines;
         }
         else
         {
-            // Sharp Memory in Pixel display requires to toglle VCOM at least once per second.
-            // VCOM is toggled in Draw methods. If no draw method is called, then it is required to call ToggleVCOM()
-            display->ToggleVCOM();
+            counter += chars_per_line;
         }
     }
     

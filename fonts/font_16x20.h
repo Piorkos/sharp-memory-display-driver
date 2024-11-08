@@ -1,9 +1,12 @@
-#ifndef FONT_12x20_H
-#define FONT_12x20_H
+#ifndef FONT_16x20_H
+#define FONT_16x20_H
 
 #include <stdio.h>
 
-const uint8_t kFont_12_20[] = {
+// FONT_16x20: (4px + 12px) x 20px
+// 4px - space between chars
+// 12px - width of a char
+const uint8_t kFont_16_20[] = {
     
     // ---FONT WIDTH x HEIGTH---
     // Width - number of BYTES used to represent width of char it is NOT the same as width of char in pixels
@@ -2011,4 +2014,4 @@ const uint8_t kFont_12_20[] = {
     0b11111111, 0b11111111
 };
 
-#endif  //FONT_12x20_H
+#endif  //FONT_16x20_H

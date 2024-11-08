@@ -8,7 +8,6 @@
 #include "hardware/gpio.h"
 
 #include "display.h"
-#include "font_16x20.h"
 
 class SharpMipDisplay : public Display
 {
