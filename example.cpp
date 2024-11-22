@@ -5,11 +5,11 @@
 #include "hardware/spi.h"
 
 #include "display.h"
-#include "sharp_mip_display.h"
-#include "fonts/font_8x10.h"
-#include "fonts/font_16x20.h"
-#include "fonts/font_24x30.h"
-#include "fonts/font_32x40.h"
+#include "sharp-mip/sharp_mip_display.h"
+#include "sharp-mip/fonts/font_8x10.h"
+#include "sharp-mip/fonts/font_16x20.h"
+#include "sharp-mip/fonts/font_24x30.h"
+#include "sharp-mip/fonts/font_32x40.h"
 
 // SPI pins
 #define SPI_SCK_PIN     26U         // SCLK / SCK
@@ -39,7 +39,7 @@ int main() {
     SharpMipDisplay* display = new SharpMipDisplay(DISPLAY_WIDTH, DISPLAY_HEIGHT, spi1, SPI_CS_PIN);
     sleep_ms(1000);
     display->ClearScreen();
-    display->DrawLineOfText(0, 0, "HELLO", kFont_24_30);
+    display->DrawLineOfText(0, 0, " Jo!", kFont_24_30);
     display->RefreshScreen(0,30);
 
     // Array with printable ASCII characters

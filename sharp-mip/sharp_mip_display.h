@@ -7,7 +7,7 @@
 #include "hardware/spi.h"
 #include "hardware/gpio.h"
 
-#include "display.h"
+#include "../display.h"
 
 class SharpMipDisplay : public Display
 {
