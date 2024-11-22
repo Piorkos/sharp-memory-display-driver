@@ -1,8 +1,12 @@
 # Sharp Memory display driver for Raspberry Pi Pico SDK
 
-This repository contains a custom driver for interfacing Sharp Memory LCD displays with the Raspberry's RP2040 using the Pico SDK. The driver enables text display on the screen and includes support for two fonts, though not all ASCII characters are currently supported. The driver also manages the toggling of the VCOM signal, which is required to prevent screen degradation.
+This repository provides a custom driver for interfacing Sharp Memory LCD displays with the RP2040 using the Pico SDK, specifically designed to maximize performance and minimize power consumption. 
 
-The Sharp Memory Display shines with its ultra-low power consumption. My driver is optimized to maintain that efficiency while delivering solid performance, perfect for energy-sensitive applications. However, due to the focus on performance and low power usage, the driver is designed with certain limitations and does not support drawing more complex graphical elements.
+The Sharp Memory Display shines with its ultra-low power consumption, and this driver is optimized to maintain that efficiency, making it well-suited for energy-sensitive applications. 
+- Key methods: DrawLineOfText() and DrawHorizontalLine() are crafted for speed and low power
+- Additional functions: SetPixel(), ResetPixel() and DrawVerticalLine() - enable more complex rendering at a higher power and performance cost.
+
+The driver also manages the toggling of the VCOM signal, which is required to prevent screen degradation.
 
 ## Usage
 
@@ -17,9 +21,9 @@ SharpMipDisplay* display = new SharpMipDisplay(DISPLAY_WIDTH, DISPLAY_HEIGHT, sp
 ### Writing Text to the Display
 You can display text using the DrawLineOfText() method of the SharpMipDisplay class. The method parameters allow you to specify the position and behavior of the text:
 ```cpp
-#include "font_12x16.h"
+#include "font_16x20.h"
 
-display->DrawLineOfText(x, y, "HELLO", kFont_12_16);
+display->DrawLineOfText(x, y, "HELLO", kFont_16_20);
 ```
 
 - x: The horizontal starting position of the text, specified in bytes (1 byte = 8 pixels).
@@ -44,7 +48,7 @@ Here’s a simple example of how to create the display object and write text:
 
 #include "display.h"
 #include "sharp_mip_display.h"
-#include "font_12x16.h"
+#include "font_24x30.h"
 #include "font_16x20.h"
 
 // SPI pins
@@ -79,8 +83,8 @@ int main() {
 
     // Draw text "HELLO"
     display->ClearScreen();
-    display->DrawLineOfText(0, 0, "HELLO", kFont_12_16);
-    display->RefreshScreen(0,16);
+    display->DrawLineOfText(0, 0, "HELLO", kFont_24_30);
+    display->RefreshScreen(0,30);
 
     int counter{20};
     while (true)
@@ -108,4 +112,4 @@ int main() {
 
 ## Fonts
 
-Currently, the driver supports two fonts, though they do not include all ASCII characters.
+The font set for the Sharp memory display driver includes 4 distinct sizes, providing flexibility for different display requirements. Each font is covering the full range of printable ASCII characters. These fonts can be easily selected and adjusted within the driver to suit various use cases.
