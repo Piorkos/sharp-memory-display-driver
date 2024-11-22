@@ -39,9 +39,6 @@
 *.x86_64
 *.hex
 
-# Build files
-CMakeLists.txt
-
 # Debug files
 *.dSYM/
 *.su
